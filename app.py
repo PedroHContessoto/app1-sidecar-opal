@@ -31,7 +31,7 @@ async def get_data_sources_app1(token: Optional[str] = Query(None)):
     if not token:
         raise HTTPException(status_code=401, detail="Token JWT ausente")
 
-    public_key = os.getenv("OPAL_PUBLIC_KEY").replace("\\n", "\n")
+    public_key = os.getenv("OPAL_PUBLIC_KEY")
     if not public_key:
         raise HTTPException(status_code=500, detail="Chave pública do OPAL (OPAL_PUBLIC_KEY) não configurada")
 

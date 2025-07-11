@@ -1,47 +1,61 @@
 # app1/docker-compose.yml
-
 version: '3.8'
+
 services:
+  # Banco de dados PostgreSQL específico para a App1
   db-app1:
     image: postgres:13-alpine
     container_name: db_app1
-    # MODIFICADO: As credenciais agora são lidas do arquivo .env
     environment:
+      # As credenciais são lidas do arquivo app1/.env
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_DB=${DB_NAME}
-    ports: ["5432:5432"]
+    # A porta 5432 do contêiner é mapeada para 5433 no host para evitar conflitos
+    # com o postgres da infraestrutura OPAL, caso ele também exponha a porta.
+    ports: ["5433:5432"]
     networks: [opal_network_poc]
+    # Adicionado volume para persistir os dados do banco da app1
+    volumes:
+      - db_app1_data:/var/lib/postgresql/data
 
+  # Serviço da Aplicação 1
   app1:
-    image: python:3.9-slim
-    container_name: app1
-    working_dir: /app
-    volumes: [./:/app]
-    command: >
-      sh -c "pip install fastapi uvicorn psycopg2-binary && uvicorn app:app --host 0.0.0.0 --port 8001"
-    ports: ["8001:8001"]
+    build: . # Assumindo que existe um Dockerfile no diretório da app1
+    container_name: app1_service
     depends_on: [db-app1]
-    # NOVO: Injete as credenciais do DB como variáveis de ambiente no contêiner da aplicação
     environment:
+      # Injeta as credenciais do DB.
+      # IMPORTANTE: O host agora é o nome do serviço 'db-app1'.
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_NAME=${DB_NAME}
-      - DB_HOST=${DB_HOST}
-      - DB_PORT=${DB_PORT}
+      - DB_HOST=db-app1 # <-- CORREÇÃO CRÍTICA
+      - DB_PORT=5432    # <-- A porta interna do contêiner
+    ports: ["8001:8001"]
     networks: [opal_network_poc]
 
+  # Cliente OPAL (Sidecar) para a App1
   opal-client-app1:
     image: permitio/opal-client:latest
     container_name: opal_client_app1
     depends_on: [app1]
-    ports: ["8181:8181"]
+    # A porta 8181 do OPA é mapeada para 7766 no host (porta padrão do OPA)
+    ports: ["7766:8181"]
     environment:
-      - OPAL_SERVER_URL=http://opal-server:7002
-      - OPAL_CLIENT_TOKEN=${OPAL_TOKEN}
-      - OPAL_WORKER_TOKEN_PUBLIC_KEY=${OPAL_PUBLIC_KEY}
+      # URL do OPAL Server (usa o nome do contêiner da infra)
+      - OPAL_SERVER_URL=http://opal_server:7002
+      # Token para o cliente se autenticar no servidor
+      - OPAL_CLIENT_TOKEN=${OPAL_TOKEN} # <-- CORREÇÃO
+      # Inscreve este cliente APENAS no escopo 'app1'
       - OPAL_SCOPES=app1
     networks: [opal_network_poc]
 
+# Declara que vamos usar uma rede que já existe (criada pela infra )
 networks:
-  opal_network_poc: {external: true}
+  opal_network_poc:
+    external: true
+
+# Declara o volume para o banco de dados da app1
+volumes:
+  db_app1_data:

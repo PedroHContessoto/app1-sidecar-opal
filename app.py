@@ -3,13 +3,22 @@
 from fastapi import FastAPI
 import os # Importe o módulo 'os' para ler variáveis de ambiente
 
-app = FastAPI( )
+app = FastAPI()
+
+# --- NOVO ENDPOINT PARA O HEALTHCHECK ---
+@app.get("/")
+async def read_root():
+    """
+    Este endpoint existe para que o healthcheck do Docker receba uma
+    resposta 200 OK, indicando que a aplicação está no ar e saudável.
+    """
+    return {"status": "app1 is healthy"}
 
 @app.get("/opal/data-sources")
 async def get_data_sources_app1():
     print("APP1: Endpoint /opal/data-sources foi chamado.")
     
-    # MODIFICADO: Leia as credenciais das variáveis de ambiente
+    # Leia as credenciais das variáveis de ambiente
     user = os.getenv("DB_USER")
     password = os.getenv("DB_PASSWORD")
     host = os.getenv("DB_HOST")

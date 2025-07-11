@@ -1,0 +1,47 @@
+# app1/docker-compose.yml
+
+version: '3.8'
+services:
+  db-app1:
+    image: postgres:13-alpine
+    container_name: db_app1
+    # MODIFICADO: As credenciais agora são lidas do arquivo .env
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    ports: ["5432:5432"]
+    networks: [opal_network_poc]
+
+  app1:
+    image: python:3.9-slim
+    container_name: app1
+    working_dir: /app
+    volumes: [./:/app]
+    command: >
+      sh -c "pip install fastapi uvicorn psycopg2-binary && uvicorn app:app --host 0.0.0.0 --port 8001"
+    ports: ["8001:8001"]
+    depends_on: [db-app1]
+    # NOVO: Injete as credenciais do DB como variáveis de ambiente no contêiner da aplicação
+    environment:
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+    networks: [opal_network_poc]
+
+  opal-client-app1:
+    image: permitio/opal-client:latest
+    container_name: opal_client_app1
+    depends_on: [app1]
+    ports: ["8181:8181"]
+    environment:
+      - OPAL_SERVER_URL=http://opal-server:7002
+      - OPAL_CLIENT_TOKEN=${OPAL_TOKEN}
+      - OPAL_WORKER_TOKEN_PUBLIC_KEY=${OPAL_PUBLIC_KEY}
+      - OPAL_SCOPES=app1
+    networks: [opal_network_poc]
+
+networks:
+  opal_network_poc: {external: true}

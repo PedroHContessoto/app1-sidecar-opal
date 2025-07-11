@@ -6,6 +6,8 @@ services:
   db-app1:
     image: postgres:13-alpine
     container_name: db_app1
+    env_file:
+      - .env
     environment:
       # As credenciais são lidas do arquivo app1/.env
       - POSTGRES_USER=${DB_USER}
@@ -24,6 +26,8 @@ services:
     build: . # Assumindo que existe um Dockerfile no diretório da app1
     container_name: app1_service
     depends_on: [db-app1]
+    env_file:
+      - .env
     environment:
       # Injeta as credenciais do DB.
       # IMPORTANTE: O host agora é o nome do serviço 'db-app1'.
@@ -32,6 +36,7 @@ services:
       - DB_NAME=${DB_NAME}
       - DB_HOST=db-app1 # <-- CORREÇÃO CRÍTICA
       - DB_PORT=5432    # <-- A porta interna do contêiner
+      - OPAL_PUBLIC_KEY=${OPAL_PUBLIC_KEY}
     ports: ["8001:8001"]
     networks: [opal_network_poc]
 

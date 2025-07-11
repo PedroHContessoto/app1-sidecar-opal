@@ -43,6 +43,8 @@ async def get_data_sources_app1(token: Optional[str] = Query(None)):
     # 🔍 2. (Opcional, mas recomendado) Usar claims do token
     client_id = claims.get("permit_client_id", "default")
 
+    print(f"➡️ client_id = {client_id}")
+
     # 🔧 3. Carregar config do banco via env
     user = os.getenv("DB_USER")
     password = os.getenv("DB_PASSWORD")

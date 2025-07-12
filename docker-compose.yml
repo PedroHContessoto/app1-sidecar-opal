@@ -53,7 +53,7 @@ services:
       # Token para o cliente se autenticar no servidor
       - OPAL_CLIENT_TOKEN=${OPAL_CLIENT_TOKEN}
       # Inscreve este cliente APENAS no escopo 'app1'
-      - OPAL_SCOPES=app1
+      - OPAL_SCOPE_ID=app1
     networks: [opal_network_poc]
 
 # Declara que vamos usar uma rede que já existe (criada pela infra )

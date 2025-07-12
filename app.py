@@ -31,15 +31,12 @@ async def get_data_sources_app1(token: Optional[str] = Query(None)):
     if not token:
         raise HTTPException(status_code=401, detail="Token JWT ausente")
 
-    public_key = os.getenv("OPAL_AUTH_PUBLIC_KEY")
+    public_key = os.getenv("OPAL_PUBLIC_KEY")
     if not public_key:
-        raise HTTPException(status_code=500, detail="Chave pública do OPAL (OPAL_AUTH_PUBLIC_KEY) não configurada")
-
-    # Converter formato da chave pública se necessário (remover underscores e adicionar quebras de linha)
-    public_key_pem = public_key.replace("_", "\n")
+        raise HTTPException(status_code=500, detail="Chave pública do OPAL (OPAL_PUBLIC_KEY) não configurada")
 
     try:
-        claims = jwt.decode(token, public_key_pem, algorithms=["RS256"])
+        claims = jwt.decode(token, public_key, algorithms=["RS256"])
     except InvalidTokenError as e:
         raise HTTPException(status_code=401, detail=f"Token JWT inválido: {str(e)}")
 

@@ -51,7 +51,7 @@ services:
       # URL do OPAL Server (usa o nome do contêiner da infra)
       - OPAL_SERVER_URL=http://opal_server:7002
       # Token para o cliente se autenticar no servidor
-      - OPAL_CLIENT_TOKEN=${OPAL_CLIENT_TOKEN} # <-- CORREÇÃO
+      - OPAL_CLIENT_TOKEN=${OPAL_CLIENT_TOKEN}
       # Inscreve este cliente APENAS no escopo 'app1'
       - OPAL_SCOPES=app1
     networks: [opal_network_poc]

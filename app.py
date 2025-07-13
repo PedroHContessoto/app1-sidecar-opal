@@ -60,17 +60,15 @@ async def get_data_sources_app1(token: Optional[str] = Query(None)):
 
     # 📦 5. Retornar config conforme schema da OPAL
     return {
-        "config": {
-            "entries": [
-                {
-                    "url": db_url,
-                    "topics": [f"policy_data/{client_id}"],
-                    "dst_path": "employees",
-                    "config": {
-                        "fetcher": "PostgresFetchProvider",
-                        "query": "SELECT id, name, department FROM employees"
-                    }
+        "entries": [
+            {
+                "url": db_url,
+                "topics": ["policy_data/app1"],
+                "dst_path": "employees",
+                "config": {
+                    "fetcher": "PostgresFetchProvider",
+                    "query": "SELECT id, name, department FROM employees"
                 }
-            ]
-        }
+            }
+        ]
     }

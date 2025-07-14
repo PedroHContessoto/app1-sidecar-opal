@@ -122,7 +122,7 @@ async def get_data_sources_app1(token: Optional[str] = Query(None)):
             "entries": [
                 {
                     "url": db_url,
-                    "topics": [f"policy_data/{client_id}"],
+                    "topics": [f"data:policy_data/{client_id}"],
                     "dst_path": "employees",
                     "config": {
                         "fetcher": "PostgresFetchProvider",

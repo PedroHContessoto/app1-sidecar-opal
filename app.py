@@ -83,7 +83,7 @@ async def get_data_sources_app1(token: Optional[str] = Query(None)):
             raise HTTPException(status_code=500, detail=f"Erro ao converter chave SSH RSA: {str(e)}")
 
     try:
-        claims = jwt.decode(token, public_key, algorithms=["RS256"])
+        claims = jwt.decode(token, public_key, algorithms=["RS256"], options={"verify_aud": False})
     except InvalidTokenError as e:
         raise HTTPException(status_code=401, detail=f"Token JWT inválido: {str(e)}")
 

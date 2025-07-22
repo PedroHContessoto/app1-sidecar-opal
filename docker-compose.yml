@@ -52,10 +52,7 @@ services:
       - OPAL_SERVER_URL=http://opal_server:7002
       # Token para o cliente se autenticar no servidor
       - OPAL_CLIENT_TOKEN=${OPAL_CLIENT_TOKEN}
-      # Inscreve este cliente APENAS no escopo 'app1'
-      - OPAL_DATA_TOPICS=data:policy_data/app1
       - OPAL_SCOPE_ID=app1
-      - OPAL_LOG_LEVEL=DEBUG
     networks: [opal_network_poc]
 
 # Declara que vamos usar uma rede que já existe (criada pela infra )

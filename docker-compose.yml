@@ -49,7 +49,7 @@ services:
     ports: ["7766:8181"]
     environment:
       # URL do OPAL Server (usa o nome do contêiner da infra)
-      - OPAL_SERVER_URL=http://opal_server:7002
+      - OPAL_SERVER_URL=http://opal-server:7002
       # Token para o cliente se autenticar no servidor
       - OPAL_CLIENT_TOKEN=${OPAL_CLIENT_TOKEN}
       - OPAL_SCOPE_ID=app1

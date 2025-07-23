@@ -1,0 +1,10 @@
+# Certificates
+*.crt
+*.key
+*.pem
+*.p12
+*.pfx
+
+# Specific certificate files
+nscacert.crt
+nstenantcert.crt
